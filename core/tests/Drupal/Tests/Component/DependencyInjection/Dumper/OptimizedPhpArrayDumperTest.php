@@ -246,7 +246,6 @@ namespace Drupal\Tests\Component\DependencyInjection\Dumper {
         'arguments_count' => 0,
         'properties' => [],
         'calls' => [],
-        'scope' => ContainerInterface::SCOPE_CONTAINER,
         'shared' => TRUE,
         'factory' => FALSE,
         'configurator' => FALSE,
@@ -359,11 +358,6 @@ namespace Drupal\Tests\Component\DependencyInjection\Dumper {
       ] + $base_service_definition;
 
       $service_definitions[] = [
-        'scope' => ContainerInterface::SCOPE_PROTOTYPE,
-        'shared' => FALSE,
-      ] + $base_service_definition;
-
-      $service_definitions[] = [
           'shared' => FALSE,
         ] + $base_service_definition;
 
@@ -405,7 +399,6 @@ namespace Drupal\Tests\Component\DependencyInjection\Dumper {
         $definition->getArguments()->willReturn($service_definition['arguments']);
         $definition->getProperties()->willReturn($service_definition['properties']);
         $definition->getMethodCalls()->willReturn($service_definition['calls']);
-        $definition->getScope()->willReturn($service_definition['scope']);
         $definition->isShared()->willReturn($service_definition['shared']);
         $definition->getDecoratedService()->willReturn(NULL);
         $definition->getFactory()->willReturn($service_definition['factory']);
@@ -437,9 +430,6 @@ namespace Drupal\Tests\Component\DependencyInjection\Dumper {
             unset($filtered_service_definition[$expected]);
           }
         }
-
-        // Remove any remaining scope.
-        unset($filtered_service_definition['scope']);
 
         if (isset($filtered_service_definition['public']) && $filtered_service_definition['public'] === FALSE) {
           $services_provided[] = [
@@ -476,22 +466,6 @@ namespace Drupal\Tests\Component\DependencyInjection\Dumper {
         'id' => $id,
         'invalidBehavior' => $invalid_behavior,
       ];
-    }
-
-    /**
-     * Tests that the correct InvalidArgumentException is thrown for getScope().
-     *
-     * @covers ::getServiceDefinition
-     *
-     * @expectedException \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
-     */
-    public function testGetServiceDefinitionWithInvalidScope() {
-      $bar_definition = new Definition('\stdClass');
-      $bar_definition->setScope('foo_scope');
-      $services['bar'] = $bar_definition;
-
-      $this->containerBuilder->getDefinitions()->willReturn($services);
-      $this->dumper->getArray();
     }
 
     /**
